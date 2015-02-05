@@ -35,7 +35,7 @@ for FILE in `egrep -v '(^#|^$)' proprietary-files.txt`; do
   if [ ! -d $BASE/$DIR ]; then
     mkdir -p $BASE/$DIR
   fi
-  # Try CM target first
+  # Try MK target first
   if [ "$SRC" = "adb" ]; then
     adb pull /system/$DEST $BASE/$DEST
     # if file does not exist try OEM target
