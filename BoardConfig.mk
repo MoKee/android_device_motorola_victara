@@ -91,6 +91,9 @@ MAX_EGL_CACHE_SIZE := 2048*1024
 # Fonts
 EXTENDED_FONT_FOOTPRINT := true
 
+# Hardware
+BOARD_HARDWARE_CLASS := device/motorola/victara/cmhw
+
 # Init
 TARGET_NR_SVC_SUPP_GIDS := 32
 
@@ -146,6 +149,8 @@ BOARD_SEPOLICY_UNION += \
     rild.te \
     rmt_storage.te \
     stm401.te \
+    system_app.te \
+    system_server.te \
     thermal-engine.te \
     ueventd.te
 
