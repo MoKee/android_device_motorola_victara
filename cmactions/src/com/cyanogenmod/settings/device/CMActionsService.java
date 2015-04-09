@@ -32,11 +32,14 @@ public class CMActionsService extends IntentService implements ScreenStateNotifi
     private State mState;
     private SensorHelper mSensorHelper;
     private ScreenReceiver mScreenReceiver;
+    private IrGestureManager mIrGestureManager;
 
     private CameraActivationAction mCameraActivationAction;
     private DozePulseAction mDozePulseAction;
 
     private List<ActionableSensor> mActionableSensors = new LinkedList<ActionableSensor>();
+
+    private IrSilencer mIrSilencer;
 
     private Context mContext;
 
@@ -49,14 +52,17 @@ public class CMActionsService extends IntentService implements ScreenStateNotifi
         mState = new State(context);
         mSensorHelper = new SensorHelper(context);
         mScreenReceiver = new ScreenReceiver(context, this);
+        mIrGestureManager = new IrGestureManager();
 
         mCameraActivationAction = new CameraActivationAction(context);
         mDozePulseAction = new DozePulseAction(context, mState);
 
         mActionableSensors.add(new CameraActivationSensor(mSensorHelper, mCameraActivationAction));
         mActionableSensors.add(new FlatUpSensor(mSensorHelper, mState, mDozePulseAction));
-        mActionableSensors.add(new IrGestureSensor(mSensorHelper, mDozePulseAction));
+        mActionableSensors.add(new IrGestureSensor(mSensorHelper, mDozePulseAction, mIrGestureManager));
         mActionableSensors.add(new StowSensor(mSensorHelper, mState, mDozePulseAction));
+
+        mIrSilencer = new IrSilencer(context, mSensorHelper, mIrGestureManager);
 
         PowerManager powerManager = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
         if (powerManager.isInteractive()) {
