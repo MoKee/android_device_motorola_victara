@@ -18,57 +18,47 @@ package com.cyanogenmod.settings.device;
 
 import java.util.List;
 
-import android.content.ComponentName;
-import android.content.Context;
-import android.content.Intent;
-import android.content.pm.ActivityInfo;
-import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.os.PowerManager;
-import android.os.PowerManager.WakeLock;
-import android.provider.MediaStore;
 import android.util.Log;
 
-public class CameraActivationSensor implements ActionableSensor, SensorEventListener {
+public class CameraActivationSensor implements SensorEventListener, UpdatedStateNotifier {
     private static final String TAG = "CMActions-CameraSensor";
 
     private static final int TURN_SCREEN_ON_WAKE_LOCK_MS = 500;
 
-    private SensorHelper mSensorHelper;
-    private SensorAction mSensorAction;
+    private final CMActionsSettings mCMActionsSettings;
+    private final SensorHelper mSensorHelper;
 
-    private Sensor mCameraActivationSensor;
-    private Sensor mChopChopSensor;
+    private final Sensor mSensor;
 
-    private Context mContext;
+    private boolean mIsEnabled;
 
-    public CameraActivationSensor(SensorHelper sensorHelper, SensorAction sensorAction) {
+    public CameraActivationSensor(CMActionsSettings cmActionsSettings, SensorHelper sensorHelper) {
+        mCMActionsSettings = cmActionsSettings;
         mSensorHelper = sensorHelper;
-        mSensorAction = sensorAction;
-        mCameraActivationSensor = sensorHelper.getCameraActivationSensor();
-        mChopChopSensor = sensorHelper.getChopChopSensor();
-
-        Log.d(TAG, "Enabling");
-        mSensorHelper.registerListener(mCameraActivationSensor, this);
-        mSensorHelper.registerListener(mChopChopSensor, this);
+        mSensor = sensorHelper.getCameraActivationSensor();
     }
 
     @Override
-    public void setScreenOn() {
-    }
-
-    @Override
-    public void setScreenOff() {
+    public synchronized void updateState() {
+        if (mCMActionsSettings.isCameraGestureEnabled() && !mIsEnabled) {
+            Log.d(TAG, "Enabling");
+            mSensorHelper.registerListener(mSensor, this);
+            mIsEnabled = true;
+        } else if (! mCMActionsSettings.isCameraGestureEnabled() && mIsEnabled) {
+            Log.d(TAG, "Disabling");
+            mSensorHelper.unregisterListener(this);
+            mIsEnabled = false;
+        }
     }
 
     @Override
     public void onSensorChanged(SensorEvent event) {
         Log.d(TAG, "activate camera");
-        mSensorAction.action();
+        mCMActionsSettings.cameraAction();
     }
 
     @Override

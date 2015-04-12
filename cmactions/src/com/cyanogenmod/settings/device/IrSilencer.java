@@ -28,29 +28,41 @@ import android.util.Log;
 import static com.cyanogenmod.settings.device.IrGestureManager.*;
 import static android.telephony.TelephonyManager.*;
 
-public class IrSilencer extends PhoneStateListener implements SensorEventListener {
+public class IrSilencer extends PhoneStateListener implements SensorEventListener, UpdatedStateNotifier {
     private static final String TAG = "CMActions-IRSilencer";
 
     private static final int IR_GESTURES_FOR_RINGING = (1 << IR_GESTURE_SWIPE);
     private static final int SILENCE_DELAY_MS = 500;
 
-    private TelecomManager mTelecomManager;
-    private SensorHelper mSensorHelper;
-    private Sensor mSensor;
-    private IrGestureVote mIrGestureVote;
+    private final TelecomManager mTelecomManager;
+    private final TelephonyManager mTelephonyManager;
+    private final CMActionsSettings mCMActionsSettings;
+    private final SensorHelper mSensorHelper;
+    private final Sensor mSensor;
+    private final IrGestureVote mIrGestureVote;
+
     private boolean mIsRinging;
     private long mRingStartedMs;
 
-    public IrSilencer(Context context, SensorHelper sensorHelper, IrGestureManager irGestureManager) {
+    public IrSilencer(CMActionsSettings cmActionsSettings, Context context,
+                SensorHelper sensorHelper, IrGestureManager irGestureManager) {
         mTelecomManager = (TelecomManager) context.getSystemService(Context.TELECOM_SERVICE);
-        TelephonyManager telephonyManager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+        mTelephonyManager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
 
+        mCMActionsSettings = cmActionsSettings;
         mSensorHelper = sensorHelper;
         mSensor = sensorHelper.getIrGestureSensor();
         mIrGestureVote = new IrGestureVote(irGestureManager);
         mIrGestureVote.voteForState(false, 0);
+    }
 
-        telephonyManager.listen(this, LISTEN_CALL_STATE);
+    @Override
+    public void updateState() {
+        if (mCMActionsSettings.isIrSilencerEnabled()) {
+            mTelephonyManager.listen(this, LISTEN_CALL_STATE);
+        } else {
+            mTelephonyManager.listen(this, 0);
+        }
     }
 
     @Override
@@ -73,7 +85,7 @@ public class IrSilencer extends PhoneStateListener implements SensorEventListene
 
     @Override
     public synchronized void onCallStateChanged(int state, String incomingNumber) {
-        if (state == CALL_STATE_RINGING && ! mIsRinging) {
+        if (state == CALL_STATE_RINGING && !mIsRinging) {
             Log.d(TAG, "Ringing started");
             mSensorHelper.registerListener(mSensor, this);
             mIrGestureVote.voteForState(true, IR_GESTURES_FOR_RINGING);

@@ -26,22 +26,22 @@ import android.util.Log;
 import java.util.List;
 import java.util.LinkedList;
 
-public class CMActionsService extends IntentService implements ScreenStateNotifier {
+public class CMActionsService extends IntentService implements ScreenStateNotifier,
+        UpdatedStateNotifier {
     private static final String TAG = "CMActions";
 
-    private State mState;
-    private SensorHelper mSensorHelper;
-    private ScreenReceiver mScreenReceiver;
-    private IrGestureManager mIrGestureManager;
+    private final Context mContext;
 
-    private CameraActivationAction mCameraActivationAction;
-    private DozePulseAction mDozePulseAction;
+    private final DozePulseAction mDozePulseAction;
+    private final IrGestureManager mIrGestureManager;
+    private final PowerManager mPowerManager;
+    private final ScreenReceiver mScreenReceiver;
+    private final SensorHelper mSensorHelper;
+    private final State mState;
 
-    private List<ActionableSensor> mActionableSensors = new LinkedList<ActionableSensor>();
-
-    private IrSilencer mIrSilencer;
-
-    private Context mContext;
+    private final List<ActionableSensor> mActionableSensors = new LinkedList<ActionableSensor>();
+    private final List<UpdatedStateNotifier> mUpdatedStateNotifiers =
+                        new LinkedList<UpdatedStateNotifier>();
 
     public CMActionsService(Context context) {
         super("CMActionService");
@@ -50,26 +50,26 @@ public class CMActionsService extends IntentService implements ScreenStateNotifi
         Log.d(TAG, "Starting");
 
         mState = new State(context);
+        CMActionsSettings cmActionsSettings = new CMActionsSettings(context, this);
         mSensorHelper = new SensorHelper(context);
         mScreenReceiver = new ScreenReceiver(context, this);
         mIrGestureManager = new IrGestureManager();
 
-        mCameraActivationAction = new CameraActivationAction(context);
         mDozePulseAction = new DozePulseAction(context, mState);
 
-        mActionableSensors.add(new CameraActivationSensor(mSensorHelper, mCameraActivationAction));
-        mActionableSensors.add(new FlatUpSensor(mSensorHelper, mState, mDozePulseAction));
-        mActionableSensors.add(new IrGestureSensor(mSensorHelper, mDozePulseAction, mIrGestureManager));
-        mActionableSensors.add(new StowSensor(mSensorHelper, mState, mDozePulseAction));
+        // Actionable sensors get screen on/off notifications
+        mActionableSensors.add(new FlatUpSensor(cmActionsSettings, mSensorHelper, mState, mDozePulseAction));
+        mActionableSensors.add(new IrGestureSensor(cmActionsSettings, mSensorHelper, mDozePulseAction, mIrGestureManager));
+        mActionableSensors.add(new StowSensor(cmActionsSettings, mSensorHelper, mState, mDozePulseAction));
 
-        mIrSilencer = new IrSilencer(context, mSensorHelper, mIrGestureManager);
+        // Other actions that are always enabled
+        mUpdatedStateNotifiers.add(new CameraActivationSensor(cmActionsSettings, mSensorHelper));
+        mUpdatedStateNotifiers.add(new ChopChopSensor(cmActionsSettings, mSensorHelper));
+        mUpdatedStateNotifiers.add(new IrSilencer(cmActionsSettings, context, mSensorHelper,
+                mIrGestureManager));
 
-        PowerManager powerManager = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
-        if (powerManager.isInteractive()) {
-            screenTurnedOn();
-        } else {
-            screenTurnedOff();
-        }
+        mPowerManager = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
+        updateState();
     }
 
     @Override
@@ -92,8 +92,14 @@ public class CMActionsService extends IntentService implements ScreenStateNotifi
         }
     }
 
-    private boolean isDozeEnabled() {
-        return Settings.Secure.getInt(mContext.getContentResolver(),
-            Settings.Secure.DOZE_ENABLED, 1) != 0;
+    public void updateState() {
+        if (mPowerManager.isInteractive()) {
+            screenTurnedOn();
+        } else {
+            screenTurnedOff();
+        }
+        for (UpdatedStateNotifier notifier : mUpdatedStateNotifiers) {
+            notifier.updateState();
+        }
     }
 }

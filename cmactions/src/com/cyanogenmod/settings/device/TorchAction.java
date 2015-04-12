@@ -17,24 +17,26 @@
 package com.cyanogenmod.settings.device;
 
 import android.content.Context;
-import android.content.Intent;
+import android.hardware.TorchManager;
+import android.os.Vibrator;
 import android.util.Log;
 
-public class DozePulseAction implements SensorAction {
+public class TorchAction implements SensorAction {
     private static final String TAG = "CMActions";
 
-    private final Context mContext;
-    private final State mState;
+    private static final int TURN_SCREEN_ON_WAKE_LOCK_MS = 500;
 
-    public DozePulseAction(Context context, State state) {
-        mContext = context;
-        mState = state;
+    private final TorchManager mTorchManager;
+    private final Vibrator mVibrator;
+
+    public TorchAction(Context context) {
+        mTorchManager = (TorchManager) context.getSystemService(Context.TORCH_SERVICE);
+        mVibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
     }
 
+    @Override
     public void action() {
-         if (mState.mayDoze()) {
-            Log.d(TAG, "Sending doze.pulse intent");
-            mContext.sendBroadcast(new Intent("com.android.systemui.doze.pulse"));
-        }
+        mVibrator.vibrate(250);
+        mTorchManager.toggleTorch();
     }
 }
