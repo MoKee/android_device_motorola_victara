@@ -687,7 +687,8 @@ on property:sys.boot_completed=1
     # Interative governor
 
     write /sys/devices/system/cpu/cpufreq/interactive/above_hispeed_delay "20000 1400000:40000 1700000:20000"
-    write /sys/devices/system/cpu/cpufreq/interactive/go_hispeed_load 90
+    # The power hal actually managest go_hisped_load and must also be changed if you change this
+    write /sys/devices/system/cpu/cpufreq/interactive/go_hispeed_load 50
     write /sys/devices/system/cpu/cpufreq/interactive/hispeed_freq 1190400
     write /sys/devices/system/cpu/cpufreq/interactive/io_is_busy 1
     write /sys/devices/system/cpu/cpufreq/interactive/target_loads "85 1500000:90 1800000:70"
@@ -748,13 +749,6 @@ on property:ro.data.large_tcp_window_size=true
 #    user system
 #    group system
 #    disabled
-
-service_redefine ril-daemon /system/bin/rild
-    class main
-    socket rild stream 660 root radio
-    socket rild-debug stream 660 radio system
-    user root
-    group radio cache inet misc audio log qcom_diag net_raw diag wifi
 
 service ril-daemon1 /system/bin/rild -c 2
     class main
