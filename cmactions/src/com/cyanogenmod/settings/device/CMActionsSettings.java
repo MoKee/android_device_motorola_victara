@@ -30,8 +30,10 @@ public class CMActionsSettings {
     private static final int ACTION_LAUNCH_CAMERA = 1;
     private static final int ACTION_TORCH = 2;
 
+    private static final String GESTURE_USER_AWARE_DISPLAY_KEY = "gesture_user_aware_display";
     private static final String GESTURE_CAMERA_ACTION_KEY = "gesture_camera_action";
     private static final String GESTURE_CHOP_CHOP_KEY = "gesture_chop_chop";
+    private static final String GESTURE_FEEDBACK_INTENSITY_KEY = "gesture_feedback_intensity";
     private static final String GESTURE_PICK_UP_KEY = "gesture_pick_up";
     private static final String GESTURE_IR_WAKEUP_KEY = "gesture_ir_wake_up";
     private static final String GESTURE_IR_SILENCER_KEY = "gesture_ir_silencer";
@@ -39,8 +41,10 @@ public class CMActionsSettings {
     private final Context mContext;
     private final UpdatedStateNotifier mUpdatedStateNotifier;
 
+    private boolean mUserAwareDisplayEnabled;
     private int mCameraGestureAction;
     private int mChopChopAction;
+    private int mFeedbackIntensity;
     private boolean mIrWakeUpEnabled;
     private boolean mIrSilencerEnabled;
     private boolean mPickUpGestureEnabled;
@@ -51,6 +55,10 @@ public class CMActionsSettings {
         sharedPrefs.registerOnSharedPreferenceChangeListener(mPrefListener);
         mContext = context;
         mUpdatedStateNotifier = updatedStateNotifier;
+    }
+
+    public boolean isUserAwareDisplayEnabled() {
+        return mUserAwareDisplayEnabled;
     }
 
     public boolean isCameraGestureEnabled() {
@@ -87,22 +95,25 @@ public class CMActionsSettings {
     }
 
     private void action(int action) {
+        int vibratorPeriod = mFeedbackIntensity * 80;
         if (action == ACTION_LAUNCH_CAMERA) {
-            new CameraActivationAction(mContext).action();
+            new CameraActivationAction(mContext, vibratorPeriod).action();
         } else if (action == ACTION_TORCH) {
-            new TorchAction(mContext).action();
+            new TorchAction(mContext, vibratorPeriod).action();
         }
     }
 
     private void loadPreferences(SharedPreferences sharedPreferences) {
-        mCameraGestureAction = getActionPreference(sharedPreferences, GESTURE_CAMERA_ACTION_KEY);
-        mChopChopAction = getActionPreference(sharedPreferences, GESTURE_CHOP_CHOP_KEY);
+        mUserAwareDisplayEnabled = sharedPreferences.getBoolean(GESTURE_USER_AWARE_DISPLAY_KEY, false);
+        mCameraGestureAction = getIntPreference(sharedPreferences, GESTURE_CAMERA_ACTION_KEY);
+        mChopChopAction = getIntPreference(sharedPreferences, GESTURE_CHOP_CHOP_KEY);
+        mFeedbackIntensity = getIntPreference(sharedPreferences, GESTURE_FEEDBACK_INTENSITY_KEY);
         mIrWakeUpEnabled = sharedPreferences.getBoolean(GESTURE_IR_WAKEUP_KEY, false);
         mPickUpGestureEnabled = sharedPreferences.getBoolean(GESTURE_PICK_UP_KEY, false);
         mIrSilencerEnabled = sharedPreferences.getBoolean(GESTURE_IR_SILENCER_KEY, false);
     }
 
-    private int getActionPreference(SharedPreferences sharedPreferences, String key) {
+    private int getIntPreference(SharedPreferences sharedPreferences, String key) {
         String value = sharedPreferences.getString(key, "0");
         return Integer.valueOf(value);
     }
@@ -113,10 +124,14 @@ public class CMActionsSettings {
         public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
             boolean updated = true;
 
-            if (GESTURE_CAMERA_ACTION_KEY.equals(key)) {
-                mCameraGestureAction = getActionPreference(sharedPreferences, GESTURE_CAMERA_ACTION_KEY);
+            if (GESTURE_USER_AWARE_DISPLAY_KEY.equals(key)) {
+                mUserAwareDisplayEnabled = sharedPreferences.getBoolean(GESTURE_USER_AWARE_DISPLAY_KEY, false);
+            } else if (GESTURE_CAMERA_ACTION_KEY.equals(key)) {
+                mCameraGestureAction = getIntPreference(sharedPreferences, GESTURE_CAMERA_ACTION_KEY);
             } else if (GESTURE_CHOP_CHOP_KEY.equals(key)) {
-                mChopChopAction = getActionPreference(sharedPreferences, GESTURE_CHOP_CHOP_KEY);
+                mChopChopAction = getIntPreference(sharedPreferences, GESTURE_CHOP_CHOP_KEY);
+            } else if (GESTURE_FEEDBACK_INTENSITY_KEY.equals(key)) {
+                mFeedbackIntensity = getIntPreference(sharedPreferences, GESTURE_FEEDBACK_INTENSITY_KEY);
             } else if (GESTURE_IR_WAKEUP_KEY.equals(key)) {
                 mIrWakeUpEnabled = sharedPreferences.getBoolean(GESTURE_IR_WAKEUP_KEY, false);
             } else if (GESTURE_PICK_UP_KEY.equals(key)) {

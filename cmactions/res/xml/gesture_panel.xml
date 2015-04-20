@@ -17,6 +17,17 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
     <PreferenceCategory
+        android:key="user_aware_display_key"
+        android:title="@string/user_aware_display_title" >
+
+        <SwitchPreference
+            android:key="gesture_user_aware_display"
+            android:defaultValue="false"
+            android:title="@string/user_aware_display_title"
+            android:summary="@string/user_aware_display_summary" />
+    </PreferenceCategory>
+
+    <PreferenceCategory
         android:key="ambient_display_key"
         android:title="@string/ambient_display_title" >
 
@@ -54,6 +65,15 @@
             android:summary="@string/chop_chop_gesture_summary"
             android:entries="@array/action_entries"
             android:entryValues="@array/action_values" />
+
+        <ListPreference
+            android:key="gesture_feedback_intensity"
+            android:defaultValue="2"
+            android:title="@string/feedback_intensity_title"
+            android:dialogTitle="@string/feedback_intensity_title"
+            android:summary="@string/feedback_intensity_summary"
+            android:entries="@array/feedback_intensity_entries"
+            android:entryValues="@array/feedback_intensity_values" />
 
         <SwitchPreference
             android:key="gesture_ir_silencer"
