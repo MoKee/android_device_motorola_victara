@@ -311,6 +311,7 @@ bin/netmgrd
 bin/qcks
 bin/qmi_motext_hook
 bin/qmuxd
+bin/rild:bin/rild.mmi
 bin/rfs_access
 bin/rmt_storage
 lib/libadropbox.so
@@ -318,7 +319,6 @@ lib/libmdmcutback.so
 lib/libmdmdetect.so
 lib/libmotext_inf.so
 lib/libqmimotext.so
-lib/libqsap_sdk.so:vendor/lib/libqsap_sdk.so
 vendor/lib/libconfigdb.so
 vendor/lib/libnetmgr.so
 vendor/lib/libril-qc-qmi-1.so

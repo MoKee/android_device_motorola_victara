@@ -21,29 +21,28 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.util.Log;
 
-public class StowSensor implements ActionableSensor, SensorEventListener {
+public class StowSensor implements ScreenStateNotifier, SensorEventListener {
     private static final String TAG = "CMActions-StowSensor";
 
     private final CMActionsSettings mCMActionsSettings;
     private final SensorHelper mSensorHelper;
-    private final State mState;
     private final SensorAction mSensorAction;
     private final Sensor mSensor;
 
     private boolean mEnabled;
+    private boolean mLastStowed;
 
-    public StowSensor(CMActionsSettings cmActionsSettings, SensorHelper sensorHelper, State state,
+    public StowSensor(CMActionsSettings cmActionsSettings, SensorHelper sensorHelper,
                 SensorAction action) {
         mCMActionsSettings = cmActionsSettings;
         mSensorHelper = sensorHelper;
-        mState = state;
         mSensorAction = action;
 
         mSensor = sensorHelper.getStowSensor();
     }
 
     @Override
-    public void setScreenOn() {
+    public void screenTurnedOn() {
         if (mEnabled) {
             Log.d(TAG, "Disabling");
             mSensorHelper.unregisterListener(this);
@@ -52,7 +51,7 @@ public class StowSensor implements ActionableSensor, SensorEventListener {
     }
 
     @Override
-    public void setScreenOff() {
+    public void screenTurnedOff() {
         if (mCMActionsSettings.isPickUpEnabled() && !mEnabled) {
             Log.d(TAG, "Enabling");
             mSensorHelper.registerListener(mSensor, this);
@@ -64,9 +63,10 @@ public class StowSensor implements ActionableSensor, SensorEventListener {
     public void onSensorChanged(SensorEvent event) {
         boolean thisStowed = (event.values[0] != 0);
         Log.d(TAG, "event: " + thisStowed);
-        if (mState.setIsStowed(thisStowed) && ! thisStowed) {
+        if (mLastStowed && ! thisStowed) {
             mSensorAction.action();
         }
+        mLastStowed = thisStowed;
     }
 
     @Override

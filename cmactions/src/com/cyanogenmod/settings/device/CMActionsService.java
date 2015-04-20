@@ -37,9 +37,8 @@ public class CMActionsService extends IntentService implements ScreenStateNotifi
     private final PowerManager mPowerManager;
     private final ScreenReceiver mScreenReceiver;
     private final SensorHelper mSensorHelper;
-    private final State mState;
 
-    private final List<ActionableSensor> mActionableSensors = new LinkedList<ActionableSensor>();
+    private final List<ScreenStateNotifier> mScreenStateNotifiers = new LinkedList<ScreenStateNotifier>();
     private final List<UpdatedStateNotifier> mUpdatedStateNotifiers =
                         new LinkedList<UpdatedStateNotifier>();
 
@@ -49,23 +48,27 @@ public class CMActionsService extends IntentService implements ScreenStateNotifi
 
         Log.d(TAG, "Starting");
 
-        mState = new State(context);
         CMActionsSettings cmActionsSettings = new CMActionsSettings(context, this);
         mSensorHelper = new SensorHelper(context);
         mScreenReceiver = new ScreenReceiver(context, this);
         mIrGestureManager = new IrGestureManager();
 
-        mDozePulseAction = new DozePulseAction(context, mState);
+        mDozePulseAction = new DozePulseAction(context);
+        mScreenStateNotifiers.add(mDozePulseAction);
 
         // Actionable sensors get screen on/off notifications
-        mActionableSensors.add(new FlatUpSensor(cmActionsSettings, mSensorHelper, mState, mDozePulseAction));
-        mActionableSensors.add(new IrGestureSensor(cmActionsSettings, mSensorHelper, mDozePulseAction, mIrGestureManager));
-        mActionableSensors.add(new StowSensor(cmActionsSettings, mSensorHelper, mState, mDozePulseAction));
-        mActionableSensors.add(new UserAwareDisplay(cmActionsSettings, mSensorHelper, mIrGestureManager, context));
+        mScreenStateNotifiers.add(new FlatUpSensor(cmActionsSettings, mSensorHelper, mDozePulseAction));
+        mScreenStateNotifiers.add(new IrGestureSensor(cmActionsSettings, mSensorHelper, mDozePulseAction, mIrGestureManager));
+        mScreenStateNotifiers.add(new StowSensor(cmActionsSettings, mSensorHelper, mDozePulseAction));
+        mScreenStateNotifiers.add(new UserAwareDisplay(cmActionsSettings, mSensorHelper, mIrGestureManager, context));
 
         // Other actions that are always enabled
-        mUpdatedStateNotifiers.add(new CameraActivationSensor(cmActionsSettings, mSensorHelper));
-        mUpdatedStateNotifiers.add(new ChopChopSensor(cmActionsSettings, mSensorHelper));
+
+        SensorAction cameraAction = cmActionsSettings.newCameraActivationAction();
+        SensorAction chopChopAction = cmActionsSettings.newChopChopAction();
+
+        mUpdatedStateNotifiers.add(new CameraActivationSensor(cmActionsSettings, cameraAction, mSensorHelper));
+        mUpdatedStateNotifiers.add(new ChopChopSensor(cmActionsSettings, chopChopAction, mSensorHelper));
         mUpdatedStateNotifiers.add(new IrSilencer(cmActionsSettings, context, mSensorHelper,
                 mIrGestureManager));
 
@@ -79,17 +82,15 @@ public class CMActionsService extends IntentService implements ScreenStateNotifi
 
     @Override
     public void screenTurnedOn() {
-        mState.setScreenIsOn(true);
-        for (ActionableSensor actionableSensor : mActionableSensors) {
-            actionableSensor.setScreenOn();
+        for (ScreenStateNotifier screenStateNotifier : mScreenStateNotifiers) {
+            screenStateNotifier.screenTurnedOn();
         }
     }
 
     @Override
     public void screenTurnedOff() {
-        mState.setScreenIsOn(false);
-        for (ActionableSensor actionableSensor : mActionableSensors) {
-            actionableSensor.setScreenOff();
+        for (ScreenStateNotifier screenStateNotifier : mScreenStateNotifiers) {
+            screenStateNotifier.screenTurnedOff();
         }
     }
 
