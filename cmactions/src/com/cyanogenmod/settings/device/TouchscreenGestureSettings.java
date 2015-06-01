@@ -18,9 +18,12 @@ package com.cyanogenmod.settings.device;
 
 import com.android.internal.util.cm.ScreenType;
 
+import android.app.ActionBar;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceCategory;
+import android.view.Menu;
+import android.view.MenuItem;
 
 public class TouchscreenGestureSettings extends PreferenceActivity {
     private static final String CATEGORY_AMBIENT_DISPLAY = "ambient_display_key";
@@ -29,13 +32,13 @@ public class TouchscreenGestureSettings extends PreferenceActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.gesture_panel);
-        if (!CMActionsSettings.isDozeEnabled(getPreferenceScreen().getContext())) {
-            PreferenceCategory ambientDisplayCat = (PreferenceCategory)
-                    getPreferenceManager().findPreference(CATEGORY_AMBIENT_DISPLAY);
-            if (ambientDisplayCat != null) {
-                ambientDisplayCat.setEnabled(false);
-            }
+        PreferenceCategory ambientDisplayCat = (PreferenceCategory)
+                findPreference(CATEGORY_AMBIENT_DISPLAY);
+        if (ambientDisplayCat != null) {
+            ambientDisplayCat.setEnabled(CMActionsSettings.isDozeEnabled(getContentResolver()));
         }
+        final ActionBar actionBar = getActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
     }
 
     @Override
@@ -46,5 +49,14 @@ public class TouchscreenGestureSettings extends PreferenceActivity {
         if (!ScreenType.isTablet(this)) {
             getListView().setPadding(0, 0, 0, 0);
         }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            onBackPressed();
+            return true;
+        }
+        return false;
     }
 }
