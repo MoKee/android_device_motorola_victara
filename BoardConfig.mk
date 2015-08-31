@@ -25,9 +25,6 @@ TARGET_SPECIFIC_HEADER_PATH := $(LOCAL_PATH)/include
 # Assert
 TARGET_OTA_ASSERT_DEVICE := victara
 
-# Use SaberMod Toolchains
-SABERMOD_TOOLCHAIN_ENABLED := true
-
 # Platform
 TARGET_BOARD_PLATFORM := msm8974
 TARGET_BOARD_PLATFORM_GPU := qcom-adreno330
