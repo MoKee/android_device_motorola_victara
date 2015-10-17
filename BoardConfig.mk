@@ -18,6 +18,8 @@
 
 LOCAL_PATH := device/motorola/victara
 
+MK_TOOLCHAIN_VARIANT := uber
+
 BOARD_VENDOR := motorola-qcom
 
 TARGET_SPECIFIC_HEADER_PATH := $(LOCAL_PATH)/include
