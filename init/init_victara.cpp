@@ -81,6 +81,13 @@ void vendor_load_properties()
         property_set("ro.com.google.clientidbase.ms", "android-verizon");
         property_set("ro.com.google.clientidbase.yt", "android-verizon");
         property_set("ro.cdma.data_retry_config", "max_retries=infinite,0,0,10000,10000,100000,10000,10000,10000,10000,140000,540000,960000");
+    } else if (strstr(cid, "0xB")) {
+        /* xt1085 */
+        property_set("ro.product.model", "XT1085");
+        property_set("ro.build.description", "victara_retcn-user 5.1 LPE23.32-53 41 release-keys");
+        property_set("ro.build.fingerprint", "motorola/victara_retcn/victara:5.1/LPE23.32-53/41:user/release-keys");
+        property_set("ro.telephony.default_network", "9");
+        property_set("telephony.lteOnGsmDevice", "1");
     } else {
         /* all others */
         property_set("ro.product.model", "XT1095");
