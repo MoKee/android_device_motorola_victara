@@ -226,22 +226,6 @@ PRODUCT_PACKAGES += \
     init.target.rc \
     ueventd.qcom.rc
 
-# Shim libraries
-PRODUCT_PACKAGES += \
-    libshim_camera \
-    libshim_log \
-    libshim_mdmcutback \
-    libshim_ril \
-    libshim_speakerbundle
-
-# SSL Compat
-PRODUCT_PACKAGES += \
-    libboringssl-compat
-
-# Stlport
-PRODUCT_PACKAGES += \
-    libstlport
-
 # Support
 PRODUCT_PACKAGES += \
     libcnefeatureconfig \
