@@ -115,6 +115,7 @@ PRODUCT_COPY_FILES += \
 # Camera
 PRODUCT_PACKAGES += \
     Snap \
+    libshim_camera \
     camera.msm8974
 
 # Charger
@@ -234,6 +235,9 @@ PRODUCT_PACKAGES += \
 # Thermal
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/configs/thermal-engine-victara.conf:system/etc/thermal-engine-victara.conf
+
+PRODUCT_PACKAGES += \
+    libshims_thermal
 
 # Torch
 PRODUCT_PACKAGES += \
