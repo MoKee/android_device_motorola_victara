@@ -156,6 +156,7 @@ config_bt ()
        then
            setprop ro.bluetooth.hfp.ver 1.6
            setprop ro.qualcomm.bt.hci_transport smd
+           setprop qcom.bluetooth.soc smd
        fi
        ;;
     "apq8084" | "mpq8092" )

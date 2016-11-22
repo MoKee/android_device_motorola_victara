@@ -17,3 +17,5 @@
 
 # Note: because we don't have ,encryptable=userdata the usb-otg will not be adoptable
 /devices/*/xhci-hcd/usb*           auto         auto    defaults                                    voldmanaged=usb:auto
+
+/dev/block/zram0             none         swap    defaults zramsize=805306368

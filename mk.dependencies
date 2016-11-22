@@ -8,7 +8,7 @@
     "target_path": "device/qcom/common"
   },
   {
-    "repository": "android_kernel_motorola_msm8974",
-    "target_path": "kernel/motorola/msm8974"
+    "repository": "android_kernel_motorola_victara_retcn",
+    "target_path": "kernel/motorola/victara_retcn"
   }
 ]
