@@ -10,5 +10,9 @@
   {
     "repository": "android_kernel_motorola_victara_retcn",
     "target_path": "kernel/motorola/victara_retcn"
-  }
+  },
+  {
+    "repository": "android_packages_resources_devicesettings",
+    "target_path": "packages/resources/devicesettings"
+   }
 ]
