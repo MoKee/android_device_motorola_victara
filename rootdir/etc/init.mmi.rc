@@ -16,20 +16,6 @@ on early-init
     write /sys/block/zram0/comp_algorithm lz4
     write /proc/sys/vm/swappiness 100
 
-on charger
-    trigger early-fs
-    trigger fs
-    trigger post-fs
-    trigger post-fs-data
-    trigger moto-charger
-    class_stop main
-
-on moto-charger
-    setprop ro.board.platform msm8974
-    start qcom-post-boot
-    start thermal-com
-    start charge_only_mode
-
 on init
     copy /module_hashes /sys/kernel/module_whitelist
 
