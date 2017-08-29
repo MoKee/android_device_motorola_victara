@@ -51,7 +51,7 @@ BOARD_KERNEL_SEPARATED_DT := true
 BOARD_MKBOOTIMG_ARGS := --ramdisk_offset 0x02000000 --tags_offset 0x01e00000
 LZMA_RAMDISK_TARGETS := boot,recovery
 TARGET_KERNEL_SOURCE := kernel/motorola/victara_retcn
-TARGET_KERNEL_CONFIG := cyanogenmod_victara_defconfig
+TARGET_KERNEL_CONFIG := mokee_victara_defconfig
 
 #SD LLVM
 TARGET_USE_SDCLANG := true
