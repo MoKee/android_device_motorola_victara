@@ -342,5 +342,8 @@
          NOTE: This requires additional hardware-specific code.
     <bool name="config_uiBlurEnabled">true</bool> -->
 
+   <integer name="config_extraFreeKbytesAbsolute">30720</integer>
+   <integer name="config_lowMemoryKillerMinFreeKbytesAbsolute">285696</integer>
+
 </resources>
 
