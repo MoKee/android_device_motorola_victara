@@ -3,6 +3,9 @@ $(call inherit-product, device/motorola/victara/full_victara.mk)
 # Inherit some common Lineage stuff.
 $(call inherit-product, vendor/mk/config/common_full_phone.mk)
 
+PRODUCT_PROPERTY_OVERRIDES += \
+    ro.mk.maintainer=parhelia
+
 # Overlay
 DEVICE_PACKAGE_OVERLAYS += $(LOCAL_PATH)/overlay
 

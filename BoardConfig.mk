@@ -22,7 +22,7 @@ LOCAL_PATH := device/motorola/victara
 BOARD_VENDOR := motorola-qcom
 
 # Assert
-TARGET_OTA_ASSERT_DEVICE := victara
+TARGET_OTA_ASSERT_DEVICE := victara,victara_retcn
 
 # AIDs and CAPS
 TARGET_FS_CONFIG_GEN := \
