@@ -1,6 +1,6 @@
 $(call inherit-product, device/motorola/victara/full_victara.mk)
 
-# Inherit some common Lineage stuff.
+# Inherit some common MK stuff.
 $(call inherit-product, vendor/mk/config/common_full_phone.mk)
 
 PRODUCT_PROPERTY_OVERRIDES += \
