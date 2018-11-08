@@ -21,16 +21,10 @@ LOCAL_PATH := device/motorola/victara
 
 BOARD_VENDOR := motorola-qcom
 
+TARGET_SPECIFIC_HEADER_PATH := $(LOCAL_PATH)/include
+
 # Assert
 TARGET_OTA_ASSERT_DEVICE := victara,victara_retcn
-
-# AIDs and CAPS
-TARGET_FS_CONFIG_GEN := \
-    $(LOCAL_PATH)/fs_config/mot_aids.txt \
-    $(LOCAL_PATH)/fs_config/file_caps.txt
-
-# Filesystem
-TARGET_FS_CONFIG_GEN := $(LOCAL_PATH)/config.fs
 
 # Platform
 TARGET_BOARD_PLATFORM := msm8974
@@ -41,9 +35,6 @@ BOARD_USES_QCOM_HARDWARE := true
 TARGET_BOOTLOADER_BOARD_NAME := MSM8974
 TARGET_NO_BOOTLOADER := true
 
-# Binder API version
-TARGET_USES_64_BIT_BINDER := true
-
 # Architecture
 TARGET_ARCH := arm
 TARGET_ARCH_VARIANT := armv7-a-neon
@@ -51,17 +42,20 @@ TARGET_CPU_ABI := armeabi-v7a
 TARGET_CPU_ABI2 := armeabi
 TARGET_CPU_VARIANT := krait
 
+# Binder API version
+TARGET_USES_64_BIT_BINDER := true
+
 # Kernel
 BOARD_KERNEL_CMDLINE := console=none androidboot.hardware=qcom msm_rtb.filter=0x37 ehci-hcd.park=3 vmalloc=400M androidboot.selinux=permissive
 BOARD_KERNEL_BASE := 0x80200000
 BOARD_KERNEL_LZ4C_DT := true
 BOARD_KERNEL_PAGESIZE := 2048
-BOARD_KERNEL_IMAGE_NAME := zImage
 BOARD_KERNEL_SEPARATED_DT := true
 BOARD_MKBOOTIMG_ARGS := --ramdisk_offset 0x02000000 --tags_offset 0x01e00000
 LZMA_RAMDISK_TARGETS := boot,recovery
 TARGET_KERNEL_SOURCE := kernel/motorola/msm8974
-TARGET_KERNEL_CONFIG := mokee_victara_defconfig
+TARGET_KERNEL_CONFIG := lineageos_victara_defconfig
+BOARD_KERNEL_IMAGE_NAME := zImage
 
 # Audio
 AUDIO_FEATURE_ENABLED_ANC_HEADSET := true
@@ -73,6 +67,15 @@ AUDIO_FEATURE_ENABLED_FLUENCE := true
 USE_CUSTOM_AUDIO_POLICY := 1
 BOARD_USES_GENERIC_AUDIO := true
 TARGET_USES_QCOM_MM_AUDIO := true
+
+# Bionic
+TARGET_LD_SHIM_LIBS := \
+    /system/vendor/bin/mpdecision|libshims_atomic.so \
+    /system/vendor/bin/thermal-engine|libshims_thermal.so \
+    /system/lib/libjustshoot.so|libshim_camera.so \
+    /system/lib/libjscore.so|libshim_camera.so \
+    /system/lib/libmot_sensorlistener.so|libshims_sensorlistener.so \
+    /system/lib/libmdmcutback.so|libqsap_shim.so
 
 # Bluetooth
 BOARD_BLUETOOTH_BDROID_BUILDCFG_INCLUDE_DIR := $(LOCAL_PATH)/bluetooth
@@ -87,12 +90,15 @@ TARGET_HAS_LEGACY_CAMERA_HAL1 := true
 TARGET_NEEDS_PLATFORM_TEXT_RELOCATIONS := true
 USE_DEVICE_SPECIFIC_CAMERA := true
 TARGET_USES_NON_TREBLE_CAMERA := true
+TARGET_NEEDS_LEGACY_CAMERA_HAL1_DYN_NATIVE_HANDLE := true
 
 # Display
+SF_START_GRAPHICS_ALLOCATOR_SERVICE := true
 TARGET_USES_C2D_COMPOSITION := true
 TARGET_USES_ION := true
 USE_OPENGL_RENDERER := true
 OVERRIDE_RS_DRIVER := libRSDriver_adreno.so
+SF_START_GRAPHICS_ALLOCATOR_SERVICE := true
 
 # Shader cache config options
 # Maximum size of the  GLES Shaders that can be cached for reuse.
@@ -110,9 +116,11 @@ EXTENDED_FONT_FOOTPRINT := true
 # GPS
 USE_DEVICE_SPECIFIC_GPS := true
 
-# MK hardware
-#BOARD_HARDWARE_CLASS += \
-#    $(LOCAL_PATH)/mkhw
+# Hardware
+BOARD_HARDWARE_CLASS := device/motorola/victara/mokeehw
+
+# HIDL
+DEVICE_MANIFEST_FILE := device/motorola/victara/configs/manifest.xml
 
 # Init
 TARGET_NR_SVC_SUPP_GIDS := 32
@@ -128,8 +136,10 @@ BOARD_RECOVERYIMAGE_PARTITION_SIZE := 14278336
 BOARD_SYSTEMIMAGE_PARTITION_SIZE := 2046820352
 BOARD_USERDATAIMAGE_PARTITION_SIZE := 13107068928
 
-# Power HAL
-TARGET_POWERHAL_VARIANT := qcom
+# Power
+TARGET_HAS_LEGACY_POWER_STATS := true
+TARGET_HAS_NO_WIFI_STATS := true
+TARGET_USES_INTERACTION_BOOST := true
 
 # Qualcomm support
 
@@ -150,8 +160,10 @@ TARGET_RIL_VARIANT := caf
 TARGET_USE_SDCLANG := true
 
 # SELinux
-#include device/qcom/sepolicy/sepolicy.mk
-#BOARD_SEPOLICY_DIRS += device/motorola/victara/sepolicy
+include device/qcom/sepolicy/sepolicy.mk
+include device/qcom/sepolicy/legacy-sepolicy.mk
+
+BOARD_SEPOLICY_DIRS += device/motorola/victara/sepolicy
 
 # Vendor Init
 TARGET_INIT_VENDOR_LIB := libinit_victara
@@ -171,9 +183,6 @@ BOARD_HOSTAPD_PRIVATE_LIB := lib_driver_cmd_$(BOARD_WLAN_DEVICE)
 BOARD_WPA_SUPPLICANT_DRIVER := NL80211
 BOARD_WPA_SUPPLICANT_PRIVATE_LIB := lib_driver_cmd_$(BOARD_WLAN_DEVICE)
 TARGET_USES_WCNSS_CTRL := true
-PRODUCT_VENDOR_MOVE_ENABLED := true
 WPA_SUPPLICANT_VERSION := VER_0_8_X
 WIFI_DRIVER_FW_PATH_STA   := "sta"
 WIFI_DRIVER_FW_PATH_AP    := "ap"
-
-TARGET_LD_SHIM_LIBS := /system/lib/libjustshoot.so|libshims_sensorlistener.so:/system/lib/libjscore.so|libshims_sensorlistener.so:/system/lib/libmot_sensorlistener.so|libshims_sensorlistener.so:/system/vendor/bin/thermal-engine|libshims_thermal.so:/system/vendor/bin/mpdecision|libshims_atomic.so:/system/lib/libmdmcutback.so|libqsap_shim.so

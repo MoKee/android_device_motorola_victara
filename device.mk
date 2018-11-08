@@ -24,8 +24,8 @@ PRODUCT_COPY_FILES += \
     frameworks/native/data/etc/android.hardware.camera.flash-autofocus.xml:system/etc/permissions/android.hardware.camera.flash-autofocus.xml \
     frameworks/native/data/etc/android.hardware.camera.front.xml:system/etc/permissions/android.hardware.camera.front.xml \
     frameworks/native/data/etc/android.hardware.location.gps.xml:system/etc/permissions/android.hardware.location.gps.xml \
-    frameworks/native/data/etc/android.hardware.nfc.xml:system/etc/permissions/android.hardware.nfc.xml \
-    frameworks/native/data/etc/android.hardware.nfc.hce.xml:system/etc/permissions/android.hardware.nfc.hce.xml \
+    frameworks/native/data/etc/android.hardware.nfc.xml:system/vendor/etc/permissions/android.hardware.nfc.xml \
+    frameworks/native/data/etc/android.hardware.nfc.hce.xml:system/vendor/etc/permissions/android.hardware.nfc.hce.xml \
     frameworks/native/data/etc/android.hardware.sensor.accelerometer.xml:system/etc/permissions/android.hardware.sensor.accelerometer.xml \
     frameworks/native/data/etc/android.hardware.sensor.compass.xml:system/etc/permissions/android.hardware.sensor.compass.xml \
     frameworks/native/data/etc/android.hardware.sensor.gyroscope.xml:system/etc/permissions/android.hardware.sensor.gyroscope.xml \
@@ -39,7 +39,7 @@ PRODUCT_COPY_FILES += \
     frameworks/native/data/etc/android.hardware.wifi.direct.xml:system/etc/permissions/android.hardware.wifi.direct.xml \
     frameworks/native/data/etc/android.hardware.wifi.xml:system/etc/permissions/android.hardware.wifi.xml \
     frameworks/native/data/etc/android.software.sip.voip.xml:system/etc/permissions/android.software.sip.voip.xml \
-    frameworks/native/data/etc/com.android.nfc_extras.xml:system/etc/permissions/com.android.nfc_extras.xml \
+    frameworks/native/data/etc/com.android.nfc_extras.xml:system/vendor/etc/permissions/com.android.nfc_extras.xml \
     frameworks/native/data/etc/com.nxp.mifare.xml:system/etc/permissions/com.nxp.mifare.xml \
     frameworks/native/data/etc/handheld_core_hardware.xml:system/etc/permissions/handheld_core_hardware.xml
 
@@ -77,6 +77,11 @@ PRODUCT_CHARACTERISTICS := nosdcard
 PRODUCT_AAPT_CONFIG := normal
 PRODUCT_AAPT_PREF_CONFIG := xxhdpi
 
+# Bluetooth HAL
+PRODUCT_PACKAGES += \
+    android.hardware.bluetooth@1.0-impl \
+    libbt-vendor
+
 # Boot animation
 TARGET_SCREEN_HEIGHT := 1920
 TARGET_SCREEN_WIDTH := 1080
@@ -89,6 +94,10 @@ PRODUCT_PROPERTY_OVERRIDES += \
 
 # Audio
 PRODUCT_PACKAGES += \
+    android.hardware.audio@2.0-impl \
+    android.hardware.audio.effect@2.0-impl \
+    android.hardware.broadcastradio@1.0-impl \
+    android.hardware.soundtrigger@2.0-impl \
     audio.a2dp.default \
     audio_policy.msm8974 \
     audio.primary.msm8974 \
@@ -97,37 +106,28 @@ PRODUCT_PACKAGES += \
     libaudio-resampler \
     libqcompostprocbundle \
     libqcomvisualizer \
-    libqcomvoiceprocessing
+    libqcomvoiceprocessing \
+    tinymix
 
 PRODUCT_PACKAGES += \
     mbhc.bin \
     wcd9310_anc.bin
 
-PRODUCT_PACKAGES += \
-    android.hardware.audio@2.0-impl \
-    android.hardware.audio.effect@2.0-impl \
-    android.hardware.broadcastradio@1.0-impl \
-    android.hardware.soundtrigger@2.0-impl
-
-
 # Audio configuration
 PRODUCT_COPY_FILES += \
-    $(LOCAL_PATH)/audio/audio_effects.conf:system/vendor/etc/audio_effects.conf \
+    $(LOCAL_PATH)/audio/audio_effects.xml:system/vendor/etc/audio_effects.xml \
     $(LOCAL_PATH)/audio/audio_platform_info.xml:system/vendor/etc/audio_platform_info.xml \
     $(LOCAL_PATH)/audio/audio_policy.conf:system/vendor/etc/audio_policy.conf \
     $(LOCAL_PATH)/audio/mixer_paths.xml:system/vendor/etc/mixer_paths.xml
 
-# Bluetooth
-PRODUCT_PACKAGES += \
-    libbt-vendor \
-    android.hardware.bluetooth@1.0-impl
-
 # Camera
 PRODUCT_PACKAGES += \
     android.hardware.camera.provider@2.4-impl-legacy \
-    camera.msm8974 \
+    camera.device@1.0-impl-legacy \
+    Snap \
+    libshim_camera \
     libshims_sensorlistener \
-    Snap
+    camera.msm8974
 
 # CRDA
 PRODUCT_PACKAGES += \
@@ -143,10 +143,9 @@ PRODUCT_PACKAGES += \
 # Display
 PRODUCT_PACKAGES += \
     android.hardware.graphics.allocator@2.0-impl \
-    android.hardware.graphics.allocator@2.0-service \
-    android.hardware.graphics.composer@2.1-impl \
     android.hardware.graphics.mapper@2.0-impl \
-    android.hardware.memtrack@1.0-impl \
+    android.hardware.graphics.composer@2.1-impl \
+    android.hardware.graphics.memtrack@1.0-impl \
     copybit.msm8974 \
     gralloc.msm8974 \
     hwcomposer.msm8974 \
@@ -159,11 +158,8 @@ PRODUCT_PACKAGES += \
 
 # GPS
 PRODUCT_PACKAGES += \
+    android.hardware.gnss@1.0-impl \
     gps.msm8974
-
-# HIDL
-PRODUCT_COPY_FILES += \
-    $(LOCAL_PATH)/manifest.xml:system/vendor/manifest.xml
 
 # IPv6 tethering
 PRODUCT_PACKAGES += \
@@ -192,10 +188,6 @@ PRODUCT_PACKAGES += \
 PRODUCT_PACKAGES += \
     libshims_atomic
 
-#Nox
-PRODUCT_PACKAGES += \
-    Nox
-
 # Media
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/configs/media_profiles.xml:system/etc/media_profiles.xml \
@@ -206,18 +198,19 @@ PRODUCT_COPY_FILES += \
     frameworks/av/media/libstagefright/data/media_codecs_google_video.xml:system/etc/media_codecs_google_video.xml
 
 # NFC
-#PRODUCT_PACKAGES += \
-#    libnfc \
-#    libnfc_jni \
-#    nfc_nci.bcm2079x.default \
-#    NfcNci \
-#    Tag \
-#    com.android.nfc_extras \
-#    android.hardware.nfc@1.0-impl
+PRODUCT_PACKAGES += \
+    android.hardware.nfc@1.0-impl-bcm \
+    libnfc \
+    libnfc_jni \
+    android.hardware.nfc@1.0-service \
+    nfc_nci.bcm2079x.default \
+    NfcNci \
+    Tag \
+    com.android.nfc_extras
 
 PRODUCT_COPY_FILES += \
-    device/motorola/victara/nfc/libnfc-brcm.conf:system/etc/libnfc-brcm.conf \
-    device/motorola/victara/nfc/libnfc-brcm-20795a10.conf:system/etc/libnfc-brcm-20795a10.conf
+    device/motorola/victara/nfc/libnfc-brcm.conf:system/vendor/etc/libnfc-brcm.conf \
+    device/motorola/victara/nfc/libnfc-brcm-20795a10.conf:system/vendor/etc/libnfc-brcm-20795a10.conf
 
 # OMX
 PRODUCT_PACKAGES += \
@@ -233,8 +226,7 @@ PRODUCT_PACKAGES += \
 
 # Power HAL
 PRODUCT_PACKAGES += \
-    android.hardware.power@1.0-impl \
-    power.msm8974
+    android.hardware.power@1.0-service-qti
 
 # Ramdisk
 PRODUCT_PACKAGES += \
@@ -257,21 +249,19 @@ PRODUCT_PACKAGES += \
 PRODUCT_PACKAGES += \
     android.hardware.renderscript@1.0-impl
 
-# Seccomp
-PRODUCT_COPY_FILES += \
-    $(LOCAL_PATH)/configs/mediacodec.policy:system/vendor/etc/seccomp_policy/mediacodec.policy \
-    $(LOCAL_PATH)/configs/mediaextractor.policy:system/vendor/etc/seccomp_policy/mediaextractor.policy
-
 # Sensors
 PRODUCT_PACKAGES += \
     android.hardware.sensors@1.0-impl
 
 # Support
 PRODUCT_PACKAGES += \
-    libqsap_sdk \
     libcnefeatureconfig \
     libcurl \
     libxml2
+
+# RIL Shim
+PRODUCT_PACKAGES += \
+    libqsap_shim
 
 # Thermal
 PRODUCT_COPY_FILES += \
@@ -279,10 +269,6 @@ PRODUCT_COPY_FILES += \
 
 PRODUCT_PACKAGES += \
     libshims_thermal
-
-# Radio
-PRODUCT_PACKAGES += \
-    libqsap_shim
 
 # Torch
 PRODUCT_PACKAGES += \
@@ -296,16 +282,15 @@ PRODUCT_PACKAGES += \
 PRODUCT_PACKAGES += \
     android.hardware.vibrator@1.0-impl
 
-# WiFi HAL
-PRODUCT_PACKAGES += \
-    android.hardware.wifi@1.0-service
-
 # Wifi
 PRODUCT_PACKAGES += \
+    android.hardware.wifi@1.0-service \
     hostapd \
     hostapd.accept \
     hostapd.deny \
+    libqsap_sdk \
     libwpa_client \
+    wificond \
     wcnss_service \
     wpa_supplicant \
     wificond
@@ -320,7 +305,11 @@ PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/wifi/WCNSS_cfg.dat:system/etc/firmware/wlan/prima/WCNSS_cfg.dat \
     $(LOCAL_PATH)/wifi/WCNSS_qcom_wlan_nv.bin:system/etc/firmware/wlan/prima/WCNSS_qcom_wlan_nv.bin
 
-# CMActions
+# LineageActions
 PRODUCT_PACKAGES += \
-    CMActions \
-    libjni_CMActions
+    MoKeeActions \
+    libjni_MoKeeActions
+
+# Keymaster HIDL interfaces
+PRODUCT_PACKAGES += \
+    android.hardware.keymaster@3.0-impl

@@ -119,12 +119,6 @@
     </integer-array>
 
     <!-- Vibrator pattern for feedback about booting with safe mode disabled -->
-    <!--integer-array name="config_safeModeDisabledVibePattern">
-        <item>0</item>
-        <item>117</item>
-    </integer-array -->
-
-    <!-- Vibrator pattern for feedback about booting with safe mode disabled -->
     <integer-array name="config_safeModeEnabledVibePattern">
         <item>0</item>
         <item>94</item>
@@ -198,8 +192,10 @@
             32 - Camera
             64 - Volume rocker
          For example, a device with Home, Back and Menu keys would set this
-         config to 7. 
-    <integer name="config_deviceHardwareKeys">64</integer> -->
+         config to 7. -->
+<!--
+    <integer name="config_deviceHardwareKeys">64</integer>
+-->
 
     <!-- Hardware keys present on the device with the ability to wake, stored as a bit field.
          This integer should equal the sum of the corresponding value for each
@@ -212,8 +208,10 @@
             32 - Camera
             64 - Volume rocker
          For example, a device with Home, Back and Menu keys would set this
-         config to 7. 
-    <integer name="config_deviceHardwareWakeKeys">64</integer> -->
+         config to 7. -->
+<!--
+    <integer name="config_deviceHardwareWakeKeys">64</integer>
+-->
 
     <!-- An Array of "[ConnectivityManager connectionType],
          [# simultaneous connection types]"  -->

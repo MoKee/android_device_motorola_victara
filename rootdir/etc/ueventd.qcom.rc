@@ -26,9 +26,9 @@
 #
 
 # the DIAG device node is not world writable/readable.
-/dev/diag                 0660   system     oem_2950
-/dev/ttydiag0             0660   system     oem_2950
-/dev/ttydiag1             0660   system     oem_2950
+/dev/diag                 0660   system     qcom_diag
+/dev/ttydiag0             0660   system     qcom_diag
+/dev/ttydiag1             0660   system     qcom_diag
 /dev/genlock              0666   system     system
 /dev/kgsl                 0666   system     system
 /dev/kgsl-3d0             0666   system     system
@@ -137,6 +137,7 @@
 /dev/msm_preproc_ctl      0660   system     audio
 /dev/msm_rtac             0660   system     audio
 /dev/msm_voicememo        0660   system     audio
+/dev/radio0               0640   fm_radio   fm_radio
 /dev/smd3                 0660   bluetooth  bluetooth
 /dev/smd2                 0660   bluetooth  bluetooth
 /dev/ttyHSL1              0660   system     system
@@ -263,6 +264,6 @@
 # Partitions
 /dev/block/platform/msm_sdcc.1/by-name/hob          0660 root radio
 /dev/block/platform/msm_sdcc.1/by-name/dhob         0660 root radio
-/dev/block/platform/msm_sdcc.1/by-name/clogo        0660 root oem_5004
-/dev/block/platform/msm_sdcc.1/by-name/cid          0660 root oem_5014
+/dev/block/platform/msm_sdcc.1/by-name/clogo        0660 root mot_tcmd
+/dev/block/platform/msm_sdcc.1/by-name/cid          0660 root mot_dbvc
 /dev/block/platform/msm_sdcc.1/by-name/logs         0640 root system

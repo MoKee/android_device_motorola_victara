@@ -1,3 +1,15 @@
+# These have services defined but I haven't included them
+#bin/tcmd
+#bin/tcmdhelp
+#bin/aplogd
+#bin/mbm_spy
+#bin/esdpll
+#bin/ATFWD-daemon
+#bin/debuggerd
+#bin/dropboxd
+#bin/ptt_socket_app
+#bin/subsystem_ramdump
+
 # ADSP
 bin/adspd:vendor/bin/adspd
 
@@ -44,11 +56,11 @@ vendor/lib/soundfx/libqcvirt.so
 vendor/lib/soundfx/libqcreverb.so
 
 # Battery
-bin/hvdcp
+bin/hvdcp:vendor/bin/hvdcp
 
 # Bluetooth
 bin/btnvtool:vendor/bin/btnvtool
-bin/hci_qcomm_init:vendor/bin/hci_qcomm_init
+bin/hci_qcomm_init:bin/hci_qcomm_init
 vendor/lib/libbtnv.so
 
 # Camera
@@ -157,7 +169,6 @@ vendor/lib/libthermalioctl.so
 # DRM
 bin/qseecomd:vendor/bin/qseecomd
 lib/drm/libfwdlockengine.so
-lib/libdrmdecrypt.so
 vendor/firmware/widevine.b00
 vendor/firmware/widevine.b01
 vendor/firmware/widevine.b02
@@ -174,15 +185,12 @@ vendor/lib/libmmosal.so
 vendor/lib/librpmb.so
 vendor/lib/libsecureui.so
 vendor/lib/libssd.so
-vendor/lib/drm/libdrmwvmplugin.so
-vendor/lib/mediadrm/libwvdrmengine.so
-vendor/lib/libwvdrm_L1.so
-vendor/lib/libwvm.so
-vendor/lib/libWVphoneAPI.so
-vendor/lib/libWVStreamControlAPI_L1.so
+
+# Widevine - from angler - OPR6.170623.017 factory image
+vendor/lib/mediadrm/libwvdrmengine.so|66ba66d047044f92eb0eada1faf6a5799ded90ab
 
 # GPS
-bin/gpsone_daemon:vendor/bin/gpsone_daemon
+bin/gpsone_daemon
 etc/gps.conf
 etc/izat.conf
 etc/quipc.conf
@@ -250,6 +258,10 @@ etc/firmware/venus.b04
 etc/firmware/venus.mbn
 etc/firmware/venus.mdt
 
+# Motorola
+bin/dbvc_atvc_property_set:vendor/bin/dbvc_atvc_property_set
+bin/hardware_revisions.sh:vendor/bin/hardware_revisions.sh
+
 # NFC
 etc/firmware/BCM20795A1_001.002.012.0003.0078_Generic_I2C_NCD_Signed_configdata.ncd
 
@@ -276,14 +288,15 @@ bin/efsks:vendor/bin/efsks
 bin/ks:vendor/bin/ks
 bin/netmgrd:vendor/bin/netmgrd
 bin/qcks:vendor/bin/qcks
-bin/qmi_motext_hook
+bin/qmi_motext_hook:vendor/bin/qmi_motext_hook
 bin/qmuxd:vendor/bin/qmuxd
 bin/radish:vendor/bin/radish
 bin/rmt_storage:vendor/bin/rmt_storage
-lib/libmdmcutback.so
-lib/libmdmdetect.so
-lib/libmotext_inf.so
-lib/libqmimotext.so
+lib/libadropbox.so:vendor/lib/libadropbox.so
+lib/libmdmcutback.so:vendor/lib/libmdmcutback.so
+lib/libmdmdetect.so:vendor/lib/libmdmdetect.so
+lib/libmotext_inf.so:vendor/lib/libmotext_inf.so
+lib/libqmimotext.so:vendor/lib/libqmimotext.so
 vendor/lib/libconfigdb.so
 vendor/lib/libcneapiclient.so
 vendor/lib/libsystem_health_mon.so
@@ -295,7 +308,7 @@ vendor/lib/libtime_genoff.so
 vendor/lib/libxml.so
 
 # Sensors
-bin/stm401:vendor/bin/stm401
+bin/stm401
 etc/firmware/cy8c20247_24lkxi.hex
 etc/firmware/sensorhubfw.bin
 etc/firmware/sensorhubfw_p0.bin

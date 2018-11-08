@@ -14,8 +14,8 @@ LOCAL_SHARED_LIBRARIES := \
 LOCAL_SRC_FILES += \
     loc_log.cpp \
     loc_cfg.cpp \
-    msg_q.cpp \
-    linked_list.cpp \
+    msg_q.c \
+    linked_list.c \
     loc_target.cpp \
     loc_timer.c \
     ../platform_lib_abstractions/elapsed_millis_since_boot.cpp
@@ -46,8 +46,6 @@ LOCAL_COPY_HEADERS:= \
 
 
 LOCAL_MODULE := libgps.utils
-LOCAL_MODULE_OWNER := qcom
-LOCAL_PROPRIETARY_MODULE := true
 
 LOCAL_MODULE_TAGS := optional
 

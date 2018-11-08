@@ -28,7 +28,7 @@ on init
     chown root diag /sys/kernel/dropbox/data
 
     # ESDFS
-    chown oem_5016 root /proc/fs/esdfs/packages
+    chown mot_esdfs root /proc/fs/esdfs/packages
     write /sys/module/binder/parameters/debug_mask 0
 
 on post-fs-data
@@ -36,20 +36,20 @@ on post-fs-data
     setprop installd.post_fs_data_ready 1
 
     # Permissions for Factory Test of Charging Paths
-    chown oem_5001 oem_5001 /sys/class/power_supply/battery/device/force_chg_auto_enable
-    chown oem_5001 oem_5001 /sys/class/power_supply/battery/device/force_chg_ibatt
-    chown oem_5001 oem_5001 /sys/class/power_supply/battery/device/force_chg_itrick
-    chown oem_5001 oem_5001 /sys/class/power_supply/battery/device/force_chg_iusb
-    chown oem_5001 oem_5001 /sys/class/power_supply/battery/device/force_chg_usb_suspend
-    chown oem_5001 oem_5001 /sys/class/power_supply/battery/device/force_chg_fail_clear
-    chown oem_5001 oem_5001 /sys/class/power_supply/battery/device/force_chg_usb_otg_ctl
+    chown mot_pwric mot_pwric /sys/class/power_supply/battery/device/force_chg_auto_enable
+    chown mot_pwric mot_pwric /sys/class/power_supply/battery/device/force_chg_ibatt
+    chown mot_pwric mot_pwric /sys/class/power_supply/battery/device/force_chg_itrick
+    chown mot_pwric mot_pwric /sys/class/power_supply/battery/device/force_chg_iusb
+    chown mot_pwric mot_pwric /sys/class/power_supply/battery/device/force_chg_usb_suspend
+    chown mot_pwric mot_pwric /sys/class/power_supply/battery/device/force_chg_fail_clear
+    chown mot_pwric mot_pwric /sys/class/power_supply/battery/device/force_chg_usb_otg_ctl
 
    # Setup correct permissions for dbvc and atvc
-    mkdir /data/local/dbvc 0750 oem_5004 shell
-    mkdir /data/local/atvc 0775 oem_5004 shell
+    mkdir /data/local/dbvc 0750 mot_tcmd shell
+    mkdir /data/local/atvc 0775 mot_tcmd shell
 
    # Create moodle directory that MOODLE APP can write to
-    mkdir /data/local/moodle 0770 graphics oem_5004
+    mkdir /data/local/moodle 0770 graphics mot_tcmd
 
     # Setup folders for diag_mdlog
     mkdir /data/diag_mdlog 0750 system log
@@ -73,11 +73,14 @@ on post-fs-data
     mkdir /data/wapi_certificate 0750 system wifi
     chown system wifi /data/wapi_certificate
 
+    # Create directory used by power_supply_logger
+    mkdir /data/power_supply_logger 0750 mot_pwric log
+
     # Permissions for battery health daemon
-    chown oem_5001 oem_5001 /sys/module/qpnp_bms/parameters/last_ocv_uv
-    chown oem_5001 oem_5001 /sys/module/qpnp_charger/parameters/bms_chrg_capacity
-    chown oem_5001 oem_5001 /sys/module/qpnp_charger/parameters/bms_chrg_capacity_temp
-    chown oem_5001 oem_5001 /sys/module/qpnp_charger/parameters/chrg_timestamp
+    chown mot_pwric mot_pwric /sys/module/qpnp_bms/parameters/last_ocv_uv
+    chown mot_pwric mot_pwric /sys/module/qpnp_charger/parameters/bms_chrg_capacity
+    chown mot_pwric mot_pwric /sys/module/qpnp_charger/parameters/bms_chrg_capacity_temp
+    chown mot_pwric mot_pwric /sys/module/qpnp_charger/parameters/chrg_timestamp
 
     start hvdcp
 
@@ -90,7 +93,12 @@ service apanic_annotate  /system/bin/sh /system/bin/apanic_annotate.sh build
     group log
     oneshot
 
-service hvdcp /vendor/bin/hvdcp
+service charge_only_mode /system/bin/charge_only_mode
+    user root
+    group graphics system input
+    disabled
+
+service hvdcp /system/vendor/bin/hvdcp
     class main
     user root
 
@@ -100,7 +108,7 @@ service thermal-com /vendor/bin/thermal-engine --minimode
     disabled
 
 #start Sensor daemon
-service stm401 /vendor/bin/stm401 boot
+service stm401 /system/bin/stm401 boot
     disabled
     user compass
     group compass misc input
@@ -121,14 +129,14 @@ on boot
     mkdir /data/aplogd 0750 log log
 
     # Change the ownership of display TE files for tcmds
-    chown root oem_5004 /sys/class/graphics/fb0/te_enable
-    chown root oem_5004 /sys/class/graphics/fb0/frame_counter
+    chown root mot_tcmd /sys/class/graphics/fb0/te_enable
+    chown root mot_tcmd /sys/class/graphics/fb0/frame_counter
 
     # Change ownership for HBM control
     chown system system /sys/class/graphics/fb0/hbm
 
     # STM401 driver parameter permissions
-    chown root oem_5004 /sys/module/stm401/parameters/irq_disable
+    chown root mot_tcmd /sys/module/stm401/parameters/irq_disable
     chmod 0660 /sys/module/stm401/parameters/irq_disable
 
     # Change ownership and permission for led
@@ -169,11 +177,11 @@ on boot
     write /proc/sys/net/core/wmem_max  8388608
 
     # create the necessary data dirs for tpapi with proper permission
-    mkdir /dev/tpapi 02770 oem_5007 oem_5007
-    mkdir /data/tpapi 02770 oem_5007 oem_5007
-    mkdir /data/tpapi/etc 02770 oem_5007 oem_5007
-    mkdir /data/tpapi/etc/tpa 02770 oem_5007 oem_5007
-    mkdir /data/tpapi/etc/tpa/persistent 02770 oem_5007 oem_5007
+    mkdir /dev/tpapi 02770 mot_tpapi mot_tpapi
+    mkdir /data/tpapi 02770 mot_tpapi mot_tpapi
+    mkdir /data/tpapi/etc 02770 mot_tpapi mot_tpapi
+    mkdir /data/tpapi/etc/tpa 02770 mot_tpapi mot_tpapi
+    mkdir /data/tpapi/etc/tpa/persistent 02770 mot_tpapi mot_tpapi
 
     # Force all SSR systems to 'related' so they attempt self-recovery without
     # rebooting the device
@@ -204,106 +212,106 @@ on boot
     write /sys/module/lowmemorykiller/parameters/enable_adaptive_lmk 1
     write /sys/module/lowmemorykiller/parameters/vmpressure_file_min 53059
 
-service adspd /vendor/bin/adspd /dev/ttyHS3
+service adspd /system/vendor/bin/adspd /dev/ttyHS3
     class main
     socket adspdsock stream 0660 system audio
     user audio
     group audio input diag
 
-#service ftmipcd /system/bin/ftmipcd
-#    user radio
-#    group radio inet oem_2950
-#    disabled
-#    oneshot
+service ftmipcd /system/bin/ftmipcd
+    user radio
+    group radio inet qcom_diag
+    disabled
+    oneshot
 
-#on property:ro.bootmode=mot-factory
-#    start ftmipcd
+on property:ro.bootmode=mot-factory
+    start ftmipcd
 
 # Power up to suspend
-#n property:tcmd.suspend=1
-#    stop surfaceflinger
-#    stop zygote
-#    setprop debug.sf.nobootanimation 1
+on property:tcmd.suspend=1
+    stop surfaceflinger
+    stop zygote
+    setprop debug.sf.nobootanimation 1
 
 # Normal to suspend
-#on property:tcmd.suspend=2
-#    stop surfaceflinger
-#    stop zygote
-#    setprop debug.sf.nobootanimation 1
+on property:tcmd.suspend=2
+    stop surfaceflinger
+    stop zygote
+    setprop debug.sf.nobootanimation 1
 
-#service tcmd /system/bin/tcmd
-#    class core
-#    group oem_5004 radio oem_5001 input system log camera graphics oem_5000 sdcard_r sdcard_rw audio inet bluetooth wifi compass net_bt_admin oem_9006 oem_5007 mount net_raw net_admin media shell oem_9002 nfc fm_radio qcom_diag oem_5014 cache media_rw
-#    socket local_tcmd stream 0660 oem_5004 oem_5004
-#    socket batch_socket stream 0600 oem_5004 oem_5004
-#    oneshot
-#    disabled
+service tcmd /system/bin/tcmd
+    class core
+    group mot_tcmd radio mot_pwric input system log camera graphics mot_accy sdcard_r sdcard_rw audio inet bluetooth wifi compass net_bt_admin mot_tombstone mot_tpapi mount net_raw net_admin media shell mot_usb nfc fm_radio qcom_diag mot_dbvc cache media_rw
+    socket local_tcmd stream 0660 mot_tcmd mot_tcmd
+    socket batch_socket stream 0600 mot_tcmd mot_tcmd
+    oneshot
+    disabled
 
-#service tcmdhelp /system/bin/tcmdhelp
-#    class main
-#    socket tcmdhelp stream 0600 oem_5004 oem_5004
-#    oneshot
-#    disabled
+service tcmdhelp /system/bin/tcmdhelp
+    class main
+    socket tcmdhelp stream 0600 mot_tcmd mot_tcmd
+    oneshot
+    disabled
 
-#on property:tcmd.start_tcmdhelp=1
-#    start tcmdhelp
+on property:tcmd.start_tcmdhelp=1
+    start tcmdhelp
 
 on property:persist.mot.demo_mode_charging=1
     write /sys/class/power_supply/battery/device/force_demo_mode 1
 
-#on property:persist.log.aplogd.enable=1
-#    start aplogd
+on property:persist.log.aplogd.enable=1
+    start aplogd
 
-#on property:persist.log.aplogd.enable=0
-#    stop aplogd
+on property:persist.log.aplogd.enable=0
+    stop aplogd
 
-#service aplogd /system/bin/aplogd
-    #class main
+service aplogd /system/bin/aplogd
+    class main
     #user log
     #group log system sdcard_rw sdcard_r media_rw mount
     # The user and group definitions above are intentionally disabled and left
     # only as documentation. It actually starts as root and immediately drops
     # to log plus those groups after preserving CAP_SYS_ADMIN, which is required
     # for kernel logging.
-    #disabled
+    disabled
 
-service mmi-radio-sh /system/bin/sh /init.mmi.radio.sh
+service mmi-radio-sh /vendor/etc/init.mmi.radio.sh
     class core
     user radio
     group radio
     oneshot
 
-#on property:persist.sys.diag_mdlog.on=1
-#    start diag_mdlog
+on property:persist.sys.diag_mdlog.on=1
+    start diag_mdlog
 
-#on property:persist.sys.diag_mdlog.on=0
-#    stop diag_mdlog
+on property:persist.sys.diag_mdlog.on=0
+    stop diag_mdlog
 
-#on property:log.diag_mdlog.invld_mode_stop=1
-#    stop diag_mdlog
+on property:log.diag_mdlog.invld_mode_stop=1
+    stop diag_mdlog
 
-#service diag_mdlog /system/bin/diag_mdlog-wrap
-#    class main
-#    socket mdlog_cmd stream 0660 system diag
-#    user log
-#    group log sdcard_rw sdcard_r media_rw qcom_diag
-#    disabled
+service diag_mdlog /system/bin/diag_mdlog-wrap
+    class main
+    socket mdlog_cmd stream 0660 system diag
+    user log
+    group log sdcard_rw sdcard_r media_rw qcom_diag
+    disabled
 
-#service dropboxd /system/bin/dropboxd
-#    class late_start
-#    user diag
-#    group diag
+service dropboxd /system/bin/dropboxd
+    class late_start
+    user diag
+    group diag
 
 on property:sys.boot_completed=1
     setprop sys.io.scheduler cfq
     write /proc/sys/vm/min_free_order_shift 1
 
-service mmi-boot-sh /system/bin/sh /init.mmi.boot.sh
+service mmi-boot-sh /vendor/etc/init.mmi.boot.sh
     class core
     user root
     oneshot
 
-service mmi-touch-sh /system/bin/sh /init.mmi.touch.sh atmel
+service mmi-touch-sh /vendor/etc/init.mmi.touch.sh atmel
     disabled
     user root
     oneshot
@@ -324,37 +332,59 @@ on property:ro.debuggable=1
     chmod 0775 /sys/kernel/debug
 
 
-#service mbm_spy /system/bin/mbm_spy
-#    class late_start
-#    user system
-#    group system
-#    oneshot
+service hw_revs /vendor/bin/hardware_revisions.sh
+    class main
+    user system
+    group system
+    oneshot
 
-#service qe /xbin/qe /system
-#   class main
-#   oneshot
-#   disabled
+service mbm_spy /system/bin/mbm_spy
+    class late_start
+    user system
+    group system
+    oneshot
 
-#service qe_broadcast /xbin/qe /system -b
-#   class main
-#   oneshot
-#   disabled
+service atvc_core /vendor/bin/dbvc_atvc_property_set
+   class core
+   seclabel u:r:atvc:s0
+   user mot_atvc
+   group mot_tpapi
+   oneshot
 
-#on property:persist.qe.trigger=1
-#   start qe_broadcast
+service atvc /vendor/bin/dbvc_atvc_property_set
+   class late_start
+   seclabel u:r:atvc:s0
+   user mot_atvc
+   group mot_tpapi
+   oneshot
 
-#service ss_rdump /system/bin/subsystem_ramdump 1 0
-#   class late_start
-#   user radio
-#   group log sdcard_rw sdcard_r diag
+service qe /xbin/qe /system
+   class main
+   seclabel u:r:qe:s0
+   oneshot
+   disabled
+
+service qe_broadcast /xbin/qe /system -b
+   class main
+   seclabel u:r:qe:s0
+   oneshot
+   disabled
+
+on property:persist.qe.trigger=1
+   start qe_broadcast
+
+service ss_rdump /system/bin/subsystem_ramdump 1 0
+   class late_start
+   user radio
+   group log sdcard_rw sdcard_r diag
 
 on property:persist.sys.qc.sub.rdump.on=*
    write /sys/module/subsystem_restart/parameters/enable_ramdumps ${persist.sys.qc.sub.rdump.on}
 
-#service esdpll /system/bin/esdpll -w
-#    user oem_5016
-#    group oem_5016 package_info
-#    disabled
+service esdpll /system/bin/esdpll -w
+    user mot_esdfs
+    group mot_esdfs package_info
+    disabled
 
 on property:service.bootanim.exit=1
     trigger enable-low-power
