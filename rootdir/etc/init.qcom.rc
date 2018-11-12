@@ -662,6 +662,14 @@ on property:ro.data.large_tcp_window_size=true
 #    group system
 #    disabled
 
+service ril-daemon /vendor/bin/hw/rild
+    class main
+    socket rild stream 660 root radio
+    socket rild-debug stream 660 radio system
+    user root
+    group root radio cache inet misc audio log readproc wakelock oem_2901 oem_2950 net_raw wifi
+    capabilities BLOCK_SUSPEND NET_ADMIN NET_RAW
+
 # Service not used
 #service profiler_daemon /system/bin/profiler_daemon
 #    class late_start
