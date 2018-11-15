@@ -131,9 +131,9 @@ void vendor_load_properties()
         property_set("ro.cdma.data_retry_config", "max_retries=infinite,0,0,10000,10000,100000,10000,10000,10000,10000,140000,540000,960000");
     } else if (cid == "0xB") {
         /* xt1085 */
-        property_override("ro.product.model", "XT1085");
+        property_override_dual("ro.product.model", "ro.vendor.product.model", "XT1085");
         property_override("ro.build.description", "victara-user 5.1 LPE23.32-53 41 release-keys");
-        property_override("ro.build.fingerprint", "motorola/victara/victara:5.1/LPE23.32-53/41:user/release-keys");
+        property_override_dual("ro.build.fingerprint", "ro.vendor.build.fingerprint", "motorola/victara/victara:5.1/LPE23.32-53/41:user/release-keys");
         property_set("ro.telephony.default_network", "22");
         property_set("telephony.lteOnCdmaDevice", "1");
         property_set("ro.telephony.default_cdma_sub", "0");
