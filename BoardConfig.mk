@@ -58,7 +58,7 @@ BOARD_KERNEL_SEPARATED_DT := true
 BOARD_MKBOOTIMG_ARGS := --ramdisk_offset 0x02000000 --tags_offset 0x01e00000
 LZMA_RAMDISK_TARGETS := boot,recovery
 TARGET_KERNEL_SOURCE := kernel/motorola/msm8974
-TARGET_KERNEL_CONFIG := lineageos_victara_defconfig
+TARGET_KERNEL_CONFIG := mokee_victara_defconfig
 BOARD_KERNEL_IMAGE_NAME := zImage
 
 # Audio
@@ -137,7 +137,7 @@ SMALLER_FONT_FOOTPRINT := true
 USE_DEVICE_SPECIFIC_GPS := true
 
 # Hardware
-BOARD_HARDWARE_CLASS := device/motorola/victara/lineagehw
+BOARD_HARDWARE_CLASS := device/motorola/victara/mkhw
 
 # HIDL
 DEVICE_MANIFEST_FILE := device/motorola/victara/configs/manifest.xml
