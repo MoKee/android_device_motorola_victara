@@ -97,7 +97,7 @@ ro.use_data_netmgrd=true
 persist.timed.enable=true
 
 # Vendor Security Patch Level
-ro.lineage.build.vendor_security_patch=2016-08-01
+ro.mk.build.vendor_security_patch=2016-08-01
 
 ## Wifi
 ro.disableWifiApFirmwareReload=true

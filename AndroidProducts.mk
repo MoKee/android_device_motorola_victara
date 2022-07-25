@@ -15,8 +15,8 @@
 # limitations under the License.
 
 PRODUCT_MAKEFILES := \
-    $(LOCAL_DIR)/lineage_victara.mk
+    $(LOCAL_DIR)/mokee_victara.mk
 
 COMMON_LUNCH_CHOICES := \
-    lineage_victara-userdebug \
-    lineage_victara-eng
+    mokee_victara-userdebug \
+    mokee_victara-eng
